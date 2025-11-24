@@ -1,10 +1,125 @@
 ﻿@page
-@model IndexModel
+@model SproutFTP_Project.Pages.IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "FTP Manager";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <h1 class="display-5 fw-bold">FTP File Manager</h1>
+        <p class="text-muted">ASP.NET Core Razor Pages (No Docker Support)</p>
+    </div>
+
+    <!-- ส่วนแสดงข้อความแจ้งเตือน (Success/Error) -->
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        var alertType = Model.Message.ToLower().Contains("error") ? "alert-danger" : "alert-success";
+        <div class="alert @alertType alert-dismissible fade show shadow-sm" role="alert">
+            <strong>Status:</strong> @Model.Message
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- การ์ดสำหรับอัปโหลดไฟล์ -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Upload File</h5>
+        </div>
+        <div class="card-body">
+            <!-- enctype="multipart/form-data" สำคัญมาก ต้องมีถึงจะส่งไฟล์ได้ -->
+            <form method="post" enctype="multipart/form-data" class="row g-3 align-items-center">
+                <div class="col-auto flex-grow-1">
+                    <input type="file" name="uploadedFile" class="form-control" required />
+                </div>
+                <div class="col-auto">
+                    <button type="submit" asp-page-handler="Upload" class="btn btn-success px-4">
+                        Upload
+                    </button>
+                </div>
+            </form>
+            <div class="form-text mt-2">
+                * Uploads are processed via standard HTTP POST (Stable & Reliable)
+            </div>
+        </div>
+    </div>
+
+    <!-- ตารางแสดงรายการไฟล์ -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-secondary">File List</h5>
+            <a href="/" class="btn btn-sm btn-outline-primary">Refresh List</a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col" class="ps-3">Name</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Size</th>
+                            <th scope="col">Modified</th>
+                            <th scope="col" class="text-end pe-3">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Files == null || Model.Files.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i>No files found on FTP server.</i>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var file in Model.Files)
+                            {
+                                <tr>
+                                    <td class="ps-3 fw-bold">@file.Name</td>
+                                    <td>
+                                        @if (file.Type == FluentFTP.FtpObjectType.Directory)
+                                        {
+                                            <span class="badge bg-info text-dark">Folder</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">File</span>
+                                        }
+                                    </td>
+                                    <td>@FormatSize(file.Size)</td>
+                                    <td>@file.Modified.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td class="text-end pe-3">
+                                        <!-- ปุ่ม Delete ต้องอยู่ใน Form เพื่อส่ง POST Request -->
+                                        <form method="post" asp-page-handler="Delete" asp-route-fileName="@file.Name"
+                                              onsubmit="return confirm('Are you sure you want to delete @file.Name?');"
+                                              style="display:inline;">
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+@functions {
+    // Helper function สำหรับแปลงหน่วยไฟล์ให้สวยงาม (แสดงใน View เท่านั้น)
+    public string FormatSize(long bytes)
+    {
+        string[] suffixes = { "B", "KB", "MB", "GB" };
+        int counter = 0;
+        decimal number = (decimal)bytes;
+        while (Math.Round(number / 1024) >= 1)
+        {
+            number = number / 1024;
+            counter++;
+        }
+        return string.Format("{0:n2} {1}", number, suffixes[counter]);
+    }
+}
