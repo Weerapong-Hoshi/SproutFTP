@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  ftp-server:
+    image: fauria/vsftpd
+    container_name: my-ftp-server-compose
+    ports:
+      - "21:21"
+      - "21100-21110:21100-21110"
+    volumes:
+      - ./ftp-data:/home/vsftpd/testuser
+    environment:
+      - FTP_USER=testuser
+      - FTP_PASS=testpass
+      - PASV_ADDRESS=127.0.0.1  # Use your machine's IP if accessing from elsewhere; localhost for now
+      - PASV_MIN_PORT=21100
+      - PASV_MAX_PORT=21110
