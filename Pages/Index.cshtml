@@ -1,125 +1,68 @@
 ﻿@page
-@model SproutFTP_Project.Pages.IndexModel
+@model SproutFTP.Pages.IndexModel
 @{
-    ViewData["Title"] = "FTP Manager";
+    ViewData["Title"] = "Sprout FTP";
 }
 
-<div class="container py-4">
-    <div class="text-center mb-4">
-        <h1 class="display-5 fw-bold">FTP File Manager</h1>
-        <p class="text-muted">ASP.NET Core Razor Pages (No Docker Support)</p>
-    </div>
+<div class="container mt-4">
+    <h1 class="text-center mb-4">🌱 Sprout FTP Manager</h1>
 
-    <!-- ส่วนแสดงข้อความแจ้งเตือน (Success/Error) -->
-    @if (!string.IsNullOrEmpty(Model.Message))
-    {
-        var alertType = Model.Message.ToLower().Contains("error") ? "alert-danger" : "alert-success";
-        <div class="alert @alertType alert-dismissible fade show shadow-sm" role="alert">
-            <strong>Status:</strong> @Model.Message
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
+    <!-- แสดง Error ถ้ามี -->
+    <div asp-validation-summary="All" class="alert alert-danger" style="@(ViewData.ModelState.IsValid ? "display:none" : "")"></div>
 
-    <!-- การ์ดสำหรับอัปโหลดไฟล์ -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Upload File</h5>
-        </div>
+    <!-- ฟอร์มอัปโหลด -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">Upload File</div>
         <div class="card-body">
-            <!-- enctype="multipart/form-data" สำคัญมาก ต้องมีถึงจะส่งไฟล์ได้ -->
-            <form method="post" enctype="multipart/form-data" class="row g-3 align-items-center">
-                <div class="col-auto flex-grow-1">
-                    <input type="file" name="uploadedFile" class="form-control" required />
-                </div>
-                <div class="col-auto">
-                    <button type="submit" asp-page-handler="Upload" class="btn btn-success px-4">
-                        Upload
-                    </button>
-                </div>
+            <form method="post" enctype="multipart/form-data" asp-page-handler="Upload" class="d-flex gap-2">
+                <input type="file" class="form-control" asp-for="UploadedFile" required />
+                <button class="btn btn-success" type="submit">Upload</button>
             </form>
-            <div class="form-text mt-2">
-                * Uploads are processed via standard HTTP POST (Stable & Reliable)
-            </div>
         </div>
     </div>
 
-    <!-- ตารางแสดงรายการไฟล์ -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 text-secondary">File List</h5>
-            <a href="/" class="btn btn-sm btn-outline-primary">Refresh List</a>
-        </div>
+    <!-- ตารางรายการไฟล์ -->
+    <div class="card">
+        <div class="card-header bg-dark text-white">Files on Server</div>
         <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover table-striped mb-0 align-middle">
-                    <thead class="table-dark">
-                        <tr>
-                            <th scope="col" class="ps-3">Name</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Size</th>
-                            <th scope="col">Modified</th>
-                            <th scope="col" class="text-end pe-3">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.Files == null || Model.Files.Count == 0)
+            <table class="table table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Filename</th>
+                        <th>Size (Bytes)</th>
+                        <th>Modified</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.FileList.Count == 0)
+                    {
+                        <tr><td colspan="4" class="text-center text-muted p-3">No files found.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model.FileList)
                         {
-                            <tr>
-                                <td colspan="5" class="text-center py-5 text-muted">
-                                    <i>No files found on FTP server.</i>
-                                </td>
-                            </tr>
-                        }
-                        else
-                        {
-                            @foreach (var file in Model.Files)
+                            // เช็คว่าเป็นไฟล์จริงๆ
+                            if (item.Type == FluentFTP.FtpObjectType.File)
                             {
                                 <tr>
-                                    <td class="ps-3 fw-bold">@file.Name</td>
-                                    <td>
-                                        @if (file.Type == FluentFTP.FtpObjectType.Directory)
-                                        {
-                                            <span class="badge bg-info text-dark">Folder</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-secondary">File</span>
-                                        }
-                                    </td>
-                                    <td>@FormatSize(file.Size)</td>
-                                    <td>@file.Modified.ToString("yyyy-MM-dd HH:mm")</td>
-                                    <td class="text-end pe-3">
-                                        <!-- ปุ่ม Delete ต้องอยู่ใน Form เพื่อส่ง POST Request -->
-                                        <form method="post" asp-page-handler="Delete" asp-route-fileName="@file.Name"
-                                              onsubmit="return confirm('Are you sure you want to delete @file.Name?');"
-                                              style="display:inline;">
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                Delete
-                                            </button>
+                                    <td>@item.Name</td>
+                                    <td>@item.Size</td>
+                                    <td>@item.Modified</td>
+                                    <td class="text-center">
+                                        <a asp-page-handler="Download" asp-route-fileName="@item.Name" class="btn btn-sm btn-info text-white">Download</a>
+
+                                        <form method="post" asp-page-handler="Delete" asp-route-fileName="@item.Name" style="display:inline" onsubmit="return confirm('Confirm delete?');">
+                                            <button class="btn btn-sm btn-danger">Delete</button>
                                         </form>
                                     </td>
                                 </tr>
                             }
                         }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-
-@functions {
-    // Helper function สำหรับแปลงหน่วยไฟล์ให้สวยงาม (แสดงใน View เท่านั้น)
-    public string FormatSize(long bytes)
-    {
-        string[] suffixes = { "B", "KB", "MB", "GB" };
-        int counter = 0;
-        decimal number = (decimal)bytes;
-        while (Math.Round(number / 1024) >= 1)
-        {
-            number = number / 1024;
-            counter++;
-        }
-        return string.Format("{0:n2} {1}", number, suffixes[counter]);
-    }
-}

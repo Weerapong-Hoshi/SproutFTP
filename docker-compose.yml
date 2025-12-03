@@ -1,0 +1,15 @@
+﻿version: '3.8'
+services:
+  ftp-server:
+    image: delfer/alpine-ftp-server
+    container_name: sprout-ftp-server
+    ports:
+      - "21:21"
+      - "21100-21110:21100-21110"
+    environment:
+      - USERS=admin|1234
+      - ADDRESS=127.0.0.1
+      - MIN_PORT=21100
+      - MAX_PORT=21110
+    volumes:
+      - ./ftp-data:/ftp/admin

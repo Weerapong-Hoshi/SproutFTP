@@ -1,120 +1,117 @@
 ﻿using FluentFTP;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.ComponentModel.DataAnnotations;
 
-namespace SproutFTP_Project.Pages
+namespace SproutFTP.Pages
 {
     public class IndexModel : PageModel
     {
-        // --- CONFIG ---
-        private const string FtpHost = "127.0.0.1";
-        private const int FtpPort = 21;
-        private const string FtpUser = "testuser";
-        private const string FtpPass = "testpass";
+        private readonly IConfiguration _config;
+        public List<FtpListItem> FileList { get; set; } = new List<FtpListItem>();
 
-        // ตัวแปรสำหรับส่งไปหน้า View
-        public List<FtpListItem> Files { get; set; } = new();
+        [BindProperty]
+        public IFormFile? UploadedFile { get; set; }
 
-        [TempData] // ใช้ TempData เพื่อให้ข้อความยังอยู่แม้จะ Refresh หน้า
-        public string? Message { get; set; }
-
-        // ฟังก์ชันเชื่อมต่อ (Stateless: สร้าง-ใช้-ทิ้ง)
-        private AsyncFtpClient GetClient()
+        public IndexModel(IConfiguration config)
         {
-            var client = new AsyncFtpClient(FtpHost, FtpUser, FtpPass, FtpPort);
-            client.Config.ValidateAnyCertificate = true;
-            // สำคัญ: Docker บน Localhost มักต้องการ Passive Mode
-            client.Config.DataConnectionType = FtpDataConnectionType.AutoPassive;
-            return client;
+            _config = config;
         }
 
-        // 1. เปิดหน้าเว็บ (GET)
+        // สร้าง Connection Config (บังคับ IPv4 + No SSL แก้ปัญหา Timeout)
+        private AsyncFtpClient GetFtpClient()
+        {
+            var host = _config["FtpSettings:Host"] ?? "127.0.0.1";
+            var user = _config["FtpSettings:User"] ?? "admin";
+            var pass = _config["FtpSettings:Pass"] ?? "1234";
+
+            var config = new FtpConfig
+            {
+                EncryptionMode = FtpEncryptionMode.None, // ปิด SSL
+                InternetProtocolVersions = FtpIpVersion.IPv4, // บังคับ IPv4
+                ConnectTimeout = 10000,
+            };
+
+            return new AsyncFtpClient(host, user, pass, 21, config);
+        }
+
+        // ฟังก์ชันโหลดรายชื่อไฟล์ (แยกออกมาเรียกใช้ซ้ำได้)
+        private async Task LoadFileList()
+        {
+            try
+            {
+                using var client = GetFtpClient();
+                await client.Connect();
+                // ForceList: บังคับโหลดใหม่ไม่ใช้ Cache, null: หาจาก Folder ปัจจุบัน
+                var items = await client.GetListing(null, FtpListOption.ForceList);
+                FileList = items.ToList();
+            }
+            catch (Exception ex)
+            {
+                FileList = new List<FtpListItem>();
+                ModelState.AddModelError("", $"โหลดไฟล์ไม่สำเร็จ: {ex.Message}");
+            }
+        }
+
         public async Task OnGetAsync()
         {
-            await LoadFiles();
+            await LoadFileList();
         }
 
-        // 2. อัปโหลดไฟล์ (POST)
-        // ชื่อ parameter 'uploadedFile' ต้องตรงกับ name="uploadedFile" ในหน้า html
-        public async Task<IActionResult> OnPostUploadAsync(IFormFile uploadedFile)
+        public async Task<IActionResult> OnPostUploadAsync()
         {
-            if (uploadedFile == null || uploadedFile.Length == 0)
+            if (UploadedFile == null)
             {
-                Message = "Error: Please select a file.";
-                return RedirectToPage();
+                ModelState.AddModelError("", "กรุณาเลือกไฟล์");
+                await LoadFileList(); // โหลดตารางกลับมาแสดงก่อนจบการทำงาน
+                return Page();
             }
 
             try
             {
-                using var client = GetClient();
+                using var client = GetFtpClient();
                 await client.Connect();
 
-                // อ่าน Stream จาก HTTP Post แล้วส่งเข้า FTP ทันที
-                using var stream = uploadedFile.OpenReadStream();
-                string remotePath = "/" + uploadedFile.FileName;
-
-                await client.UploadStream(stream, remotePath, FtpRemoteExists.Overwrite, createRemoteDir: false);
-                await client.Disconnect();
-
-                Message = $"Success: Uploaded '{uploadedFile.FileName}' successfully!";
+                using (var stream = UploadedFile.OpenReadStream())
+                {
+                    // อัปโหลดไฟล์ (ไม่ใส่ / นำหน้า เพื่อลงในโฟลเดอร์ปัจจุบัน)
+                    await client.UploadStream(stream, UploadedFile.FileName, FtpRemoteExists.Overwrite);
+                }
             }
             catch (Exception ex)
             {
-                Message = $"Error Uploading: {ex.Message}";
+                ModelState.AddModelError("", $"อัปโหลดพลาด: {ex.Message}");
+                await LoadFileList(); // โหลดตารางกลับมาแสดงกรณี Error
+                return Page();
             }
 
+            // สำเร็จ -> รีเฟรชหน้าใหม่ (จะไปเรียก OnGet เอง)
             return RedirectToPage();
         }
 
-        // 3. ลบไฟล์ (POST)
+        public async Task<IActionResult> OnGetDownloadAsync(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName)) return BadRequest();
+
+            using var client = GetFtpClient();
+            await client.Connect();
+
+            // CancellationToken.None แก้ปัญหา Ambiguous call
+            var bytes = await client.DownloadBytes(fileName, CancellationToken.None);
+
+            if (bytes == null) return NotFound();
+            return File(bytes, "application/octet-stream", fileName);
+        }
+
         public async Task<IActionResult> OnPostDeleteAsync(string fileName)
         {
-            if (string.IsNullOrEmpty(fileName)) return RedirectToPage();
+            if (string.IsNullOrEmpty(fileName)) return BadRequest();
 
-            try
-            {
-                using var client = GetClient();
-                await client.Connect();
-
-                string remotePath = "/" + fileName;
-
-                // ตรวจสอบว่าเป็นไฟล์หรือโฟลเดอร์ก่อนลบ
-                if (await client.DirectoryExists(remotePath))
-                {
-                    await client.DeleteDirectory(remotePath);
-                }
-                else if (await client.FileExists(remotePath))
-                {
-                    await client.DeleteFile(remotePath);
-                }
-
-                await client.Disconnect();
-                Message = $"Success: Deleted '{fileName}'.";
-            }
-            catch (Exception ex)
-            {
-                Message = $"Error Deleting: {ex.Message}";
-            }
+            using var client = GetFtpClient();
+            await client.Connect();
+            await client.DeleteFile(fileName);
 
             return RedirectToPage();
-        }
-
-        private async Task LoadFiles()
-        {
-            try
-            {
-                using var client = GetClient();
-                await client.Connect();
-                var items = await client.GetListing("/");
-                Files = items.ToList();
-                await client.Disconnect();
-            }
-            catch (Exception ex)
-            {
-                // ถ้า Connect ไม่ได้ ให้โชว์ Error แต่ไม่ให้โปรแกรมพัง
-                Message = string.IsNullOrEmpty(Message) ? $"Error Loading Files: {ex.Message}" : Message;
-                Files = new List<FtpListItem>();
-            }
         }
     }
 }
