@@ -1,15 +1,15 @@
-﻿version: '3.8'
-services:
-  ftp-server:
+﻿version: '3.8' # Docker Compose Version
+services: # Services That we need
+  ftp-server: # Ftp
     image: delfer/alpine-ftp-server
     container_name: sprout-ftp-server
-    ports:
+    ports: # Port 21 for Sending and Recieve Data
       - "21:21"
       - "21100-21110:21100-21110"
-    environment:
+    environment: # User Config
       - USERS=admin|1234
       - ADDRESS=127.0.0.1
       - MIN_PORT=21100
       - MAX_PORT=21110
-    volumes:
+    volumes: # Path
       - ./ftp-data:/ftp/admin

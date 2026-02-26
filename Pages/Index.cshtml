@@ -5,26 +5,38 @@
 }
 
 <div class="container mt-4">
+    <!-- หัวข้อหลักของหน้าเว็บ -->
     <h1 class="text-center mb-4">🌱 Sprout FTP Manager</h1>
 
-    <!-- แสดง Error ถ้ามี -->
+    <!-- ส่วนแสดงข้อความ Error ถ้ามี -->
+    <!-- ใช้ asp-validation-summary="All" เพื่อแสดงข้อความ error ทั้งหมด -->
+    <!-- ใช้ style ซ่อนถ้า ModelState ถูกต้อง -->
     <div asp-validation-summary="All" class="alert alert-danger" style="@(ViewData.ModelState.IsValid ? "display:none" : "")"></div>
 
-    <!-- ฟอร์มอัปโหลด -->
+    <!-- ส่วนฟอร์มอัปโหลดไฟล์ -->
     <div class="card mb-4">
         <div class="card-header bg-primary text-white">Upload File</div>
         <div class="card-body">
+            <!-- ฟอร์มสำหรับอัปโหลดไฟล์ -->
+            <!-- method="post" สำหรับส่งข้อมูลไปยัง OnPostUploadAsync -->
+            <!-- enctype="multipart/form-data" จำเป็นสำหรับอัปโหลดไฟล์ -->
+            <!-- asp-page-handler="Upload" ระบุ handler ที่จะเรียกใช้ -->
             <form method="post" enctype="multipart/form-data" asp-page-handler="Upload" class="d-flex gap-2">
+                <!-- ช่องเลือกไฟล์ -->
+                <!-- asp-for="UploadedFile" ผูกกับตัวแปรใน Model -->
+                <!-- required บังคับต้องเลือกไฟล์ -->
                 <input type="file" class="form-control" asp-for="UploadedFile" required />
+                <!-- ปุ่มส่งฟอร์ม -->
                 <button class="btn btn-success" type="submit">Upload</button>
             </form>
         </div>
     </div>
 
-    <!-- ตารางรายการไฟล์ -->
+    <!-- ส่วนแสดงตารางรายการไฟล์ -->
     <div class="card">
         <div class="card-header bg-dark text-white">Files on Server</div>
         <div class="card-body p-0">
+            <!-- ตารางแสดงรายการไฟล์ -->
             <table class="table table-striped mb-0">
                 <thead>
                     <tr>
@@ -35,24 +47,37 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- ตรวจสอบว่ามีไฟล์หรือไม่ -->
                     @if (Model.FileList.Count == 0)
                     {
+                        <!-- ถ้าไม่มีไฟล์ แสดงข้อความ No files found -->
                         <tr><td colspan="4" class="text-center text-muted p-3">No files found.</td></tr>
                     }
                     else
                     {
+                        <!-- วนลูปแสดงรายการไฟล์ -->
                         @foreach (var item in Model.FileList)
                         {
-                            // เช็คว่าเป็นไฟล์จริงๆ
+                            <!-- เช็คว่าเป็นไฟล์จริงๆ (ไม่ใช่โฟลเดอร์) -->
                             if (item.Type == FluentFTP.FtpObjectType.File)
                             {
                                 <tr>
+                                    <!-- แสดงชื่อไฟล์ -->
                                     <td>@item.Name</td>
+                                    <!-- แสดงขนาดไฟล์ -->
                                     <td>@item.Size</td>
+                                    <!-- แสดงวันที่แก้ไขล่าสุด -->
                                     <td>@item.Modified</td>
+                                    <!-- ส่วน Action สำหรับ Download และ Delete -->
                                     <td class="text-center">
+                                        <!-- ปุ่ม Download -->
+                                        <!-- asp-page-handler="Download" เรียก OnGetDownloadAsync -->
+                                        <!-- asp-route-fileName="@item.Name" ส่งชื่อไฟล์ไป -->
                                         <a asp-page-handler="Download" asp-route-fileName="@item.Name" class="btn btn-sm btn-info text-white">Download</a>
 
+                                        <!-- ฟอร์มสำหรับ Delete -->
+                                        <!-- asp-page-handler="Delete" เรียก OnPostDeleteAsync -->
+                                        <!-- onsubmit="return confirm('Confirm delete?');" ถามยืนยันก่อนลบ -->
                                         <form method="post" asp-page-handler="Delete" asp-route-fileName="@item.Name" style="display:inline" onsubmit="return confirm('Confirm delete?');">
                                             <button class="btn btn-sm btn-danger">Delete</button>
                                         </form>
