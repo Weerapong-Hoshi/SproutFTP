@@ -1,87 +1,87 @@
-# 🌱 SproutFTP - FTP File Manager
+# 🌱 SproutFTP - ระบบจัดการไฟล์ FTP
 
-## 📝 Project Overview
+## 📝 ภาพรวมโครงงาน
 
-**SproutFTP** is a web-based FTP (File Transfer Protocol) file manager built with **ASP.NET Core Razor Pages**. It allows users to manage files on a remote FTP server through a user-friendly web interface.
+**SproutFTP** คือเว็บแอปพลิเคชันสำหรับจัดการไฟล์บน FTP Server สร้างด้วย **ASP.NET Core Razor Pages** ช่วยให้ผู้ใช้สามารถจัดการไฟล์บนเซิร์ฟเวอร์ FTP ผ่านเว็บเบราว์เซอร์ได้อย่างสะดวก
 
-### Features
-- ✅ **Upload** files from your computer to FTP server
-- ✅ **View** list of files stored on FTP server
-- ✅ **Download** files from FTP server to your computer
-- ✅ **Delete** files from FTP server
+### ความสามารถ
+- ✅ **อัปโหลด** ไฟล์จากเครื่องคอมพิวเตอร์ขึ้น FTP Server
+- ✅ **ดู** รายการไฟล์ที่เก็บบน FTP Server
+- ✅ **ดาวน์โหลด** ไฟล์จาก FTP Server ลงเครื่อง
+- ✅ **ลบ** ไฟล์ออกจาก FTP Server
 
 ---
 
-## 🏗️ Technology Stack
+## 🏗️ เทคโนโลยีที่ใช้
 
-| Component | Technology |
-|-----------|------------|
+| ส่วนประกอบ | เทคโนโลยี |
+|-----------|-----------|
 | **Framework** | ASP.NET Core 10.0 |
-| **Programming Language** | C# |
-| **Web Pages** | Razor Pages |
+| **ภาษาโปรแกรม** | C# |
+| **หน้าเว็บ** | Razor Pages |
 | **FTP Library** | FluentFTP v53.0.2 |
 | **Frontend** | Bootstrap 5, jQuery |
 | **IDE** | Visual Studio Code |
 
 ---
 
-## 🔄 How It Works
+## 🔄 วิธีการทำงาน
 
-### Flow Diagram
+### แผนภาพการทำงาน
 
 ```
 ┌─────────────┐      ┌──────────────────┐      ┌─────────────┐
-│   User      │ ───► │  ASP.NET Core    │ ───► │  FTP Server │
+│   ผู้ใช้     │ ───► │  ASP.NET Core    │ ───► │  FTP Server │
 │  Browser    │ ◄─── │  Web App         │ ◄─── │  (Remote)   │
 └─────────────┘      └──────────────────┘      └─────────────┘
 ```
 
-### User Actions:
+### การทำงานของระบบ:
 
-1. **View Files** → Page loads → Connect to FTP → Get file list → Display table
-2. **Upload File** → Select file → Send to server → FTP saves file → Refresh list
-3. **Download File** → Click download → Fetch from FTP → Send to browser
-4. **Delete File** → Click delete → Remove from FTP → Refresh list
+1. **ดูไฟล์** → โหลดหน้า → เชื่อมต่อ FTP → ดึงรายชื่อไฟล์ → แสดงผลในตาราง
+2. **อัปโหลดไฟล์** → เลือกไฟล์ → ส่งไปยังเซิร์ฟเวอร์ → FTP บันทึกไฟล์ → รีเฟรชรายการ
+3. **ดาวน์โหลดไฟล์** → คลิกดาวน์โหลด → ดึงจาก FTP → ส่งให้เบราว์เซอร์
+4. **ลบไฟล์** → คลิกลบ → ลบออกจาก FTP → รีเฟรชรายการ
 
 ---
 
-## 📁 Project Structure
+## 📁 โครงสร้างโปรเจกต์
 
 ```
 SproutFTP/
-├── Program.cs                    # Application entry point
-├── appsettings.json             # Configuration (FTP settings)
-├── SproutFTP.csproj            # Project dependencies
+├── Program.cs                    # จุดเริ่มต้นของแอปพลิเคชัน
+├── appsettings.json             # การตั้งค่า (FTP settings)
+├── SproutFTP.csproj            # dependencies ของโปรเจกต์
 │
 ├── Pages/
-│   ├── Index.cshtml             # ⭐ Main UI (upload form, file table)
-│   ├── Index.cshtml.cs          # ⭐ Backend logic (FTP operations)
-│   ├── Error.cshtml             # Error page
-│   ├── Privacy.cshtml           # Privacy policy page
+│   ├── Index.cshtml             # ⭐ หน้าหลัก (ฟอร์มอัปโหลด, ตารางไฟล์)
+│   ├── Index.cshtml.cs          # ⭐ ตรรกะ backend (การทำงาน FTP)
+│   ├── Error.cshtml             # หน้าแสดงข้อผิดพลาด
+│   ├── Privacy.cshtml           # นโยบายความเป็นส่วนตัว
 │   └── Shared/
-│       └── _Layout.cshtml       # Site template (header, footer)
+│       └── _Layout.cshtml       # แม่แบบเว็บไซต์ (header, footer)
 │
 └── wwwroot/
     ├── css/
-    │   └── site.css             # Custom styles
-    └── lib/                     # Third-party libraries
+    │   └── site.css             # สไตล์ที่กำหนดเอง
+    └── lib/                     # ไลบรารีของบุคคลที่สาม
         ├── bootstrap/           # Bootstrap CSS
         └── jquery/              # jQuery
 ```
 
 ---
 
-## 💻 Code Explanation
+## 💻 คำอธิบายโค้ด
 
-### 1. Program.cs (Entry Point)
+### 1. Program.cs (จุดเริ่มต้น)
 
-**Location:** `d:\งาน\อ.วิน\SproutFTP\Program.cs`
+**ที่อยู่:** `d:\งาน\อ.วิน\SproutFTP\Program.cs`
 
-**What it does:**
-- Creates and configures the web application
-- Enables Razor Pages
-- Sets up routing and static files
-- Launches the web server
+**หน้าที่:**
+- สร้างและตั้งค่าเว็บแอปพลิเคชัน
+- เปิดใช้งาน Razor Pages
+- ตั้งค่า routing และไฟล์ static
+- เริ่มเว็บเซิร์ฟเวอร์
 
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
@@ -93,102 +93,100 @@ app.Run();
 
 ---
 
-### 2. Index.cshtml.cs (Backend Logic)
+### 2. Index.cshtml.cs (ตรรกะ Backend)
 
-**Location:** `d:\งาน\อ.วิน\SproutFTP\Pages\Index.cshtml.cs`
+**ที่อยู่:** `d:\งาน\อ.วิน\SproutFTP\Pages\Index.cshtml.cs`
 
-This is the **brain** of the application:
+นี่คือ **สมอง** ของแอปพลิเคชัน:
 
-| Method | Function |
-|--------|----------|
-| `GetFtpClient()` | Creates FTP connection using config settings |
-| `LoadFileList()` | Gets list of files from FTP server |
-| `OnGetAsync()` | Handles page load - displays file list |
-| `OnPostUploadAsync()` | Handles file upload to FTP server |
-| `OnGetDownloadAsync()` | Handles file download from FTP server |
-| `OnPostDeleteAsync()` | Handles file deletion from FTP server |
+| ฟังก์ชัน | หน้าที่ |
+|----------|---------|
+| `GetFtpClient()` | สร้างการเชื่อมต่อ FTP โดยใช้การตั้งค่า |
+| `LoadFileList()` | ดึงรายชื่อไฟล์จาก FTP server |
+| `OnGetAsync()` | จัดการการโหลดหน้า - แสดงรายชื่อไฟล์ |
+| `OnPostUploadAsync()` | จัดการการอัปโหลดไฟล์ไปยัง FTP |
+| `OnGetDownloadAsync()` | จัดการการดาวน์โหลดไฟล์จาก FTP |
+| `OnPostDeleteAsync()` | จัดการการลบไฟล์จาก FTP |
 
-#### FTP Connection Configuration:
+#### การตั้งค่าการเชื่อมต่อ FTP:
 ```csharp
 var config = new FtpConfig
 {
-    EncryptionMode = FtpEncryptionMode.None,    // No SSL
-    InternetProtocolVersions = FtpIpVersion.IPv4, // IPv4 only
+    EncryptionMode = FtpEncryptionMode.None,    // ไม่ใช้ SSL
+    InternetProtocolVersions = FtpIpVersion.IPv4, // IPv4 เท่านั้น
     ConnectTimeout = 10000,
 };
 ```
 
 ---
 
-### 3. Index.cshtml (User Interface)
+### 3. Index.cshtml (อินเทอร์เฟซผู้ใช้)
 
-**Location:** `d:\งาน\อ.วิน\SproutFTP\Pages\Index.cshtml`
+**ที่อยู่:** `d:\งาน\อ.วิน\SproutFTP\Pages\Index.cshtml`
 
-This is what users **see** on the website:
+สิ่งที่ผู้ใช้ **เห็น** บนเว็บไซต์:
 
-- **Header:** "Sprout FTP Manager" title
-- **Upload Form:** File picker + Upload button
-- **File Table:** Shows filename, size, date, action buttons
-- **Action Buttons:** Download (blue), Delete (red)
+- **หัวข้อ:** "Sprout FTP Manager"
+- **ฟอร์มอัปโหลด:** ปุ่มเลือกไฟล์ + ปุ่ม Upload
+- **ตารางไฟล์:** แสดงชื่อไฟล์, ขนาด, วันที่, ปุ่มการทำงาน
+- **ปุ่มการทำงาน:** ดาวน์โหลด (สีน้ำเงิน), ลบ (สีแดง)
 
 ---
 
-### 4. appsettings.json (Configuration)
+### 4. appsettings.json (การตั้งค่า)
 
-**Location:** `d:\งาน\อ.วิน\SproutFTP\appsettings.json`
+**ที่อยู่:** `d:\งาน\อ.วิน\SproutFTP\appsettings.json`
 
 ```json
 {
   "FtpSettings": {
-    "Host": "127.0.0.1",    // FTP server address
-    "User": "admin",        // Username
-    "Pass": "1234"          // Password
+    "Host": "127.0.0.1",    // ที่อยู่ FTP server
+    "User": "admin",        // ชื่อผู้ใช้
+    "Pass": "1234"          // รหัสผ่าน
   }
 }
 ```
 
 ---
 
-## 🎨 How to Edit the UI
+## 🎨 วิธีแก้ไข UI
 
-### Where to Make Changes:
+### ไฟล์ที่ต้องแก้ไข:
 
-| What to Change | Edit This File |
-|----------------|----------------|
-| Main content (upload form, file table) | `Pages/Index.cshtml` |
-| Header, footer, navigation bar | `Pages/Shared/_Layout.cshtml` |
-| Colors, fonts, spacing | `wwwroot/css/site.css` |
-| Button styles | Use Bootstrap classes in `Index.cshtml` |
+| ต้องการแก้ไข | แก้ไขไฟล์นี้ |
+|-------------|-------------|
+| เนื้อหาหลัก (ฟอร์มอัปโหลด, ตารางไฟล์) | `Pages/Index.cshtml` |
+| หัวข้อ, ส่วนท้าย, เมนูนำทาง | `Pages/Shared/_Layout.cshtml` |
+| สี, ฟอนต์, ระยะห่าง | `wwwroot/css/site.css` |
+| สไตล์ปุ่ม | ใช้ Bootstrap classes ใน `Index.cshtml` |
 
----
+### ตัวอย่าง:
 
-### Examples:
-
-#### 🔹 Change the Title
-**File:** `Pages/Index.cshtml` (line 6)
+#### 🔹 เปลี่ยนหัวข้อ
+**ไฟล์:** `Pages/Index.cshtml` (บรรทัด 6)
 ```csharp
-ViewData["Title"] = "Sprout FTP";  // Change this text
+ViewData["Title"] = "Sprout FTP";  // เปลี่ยนข้อความตรงนี้
 ```
 
-#### 🔹 Change Title Display
-**File:** `Pages/Index.cshtml` (line 9)
+#### 🔹 เปลี่ยนการแสดงหัวข้อ
+**ไฟล์:** `Pages/Index.cshtml` (บรรทัด 9)
 ```html
 <h1 class="text-center mb-4">🌱 Sprout FTP Manager</h1>
 ```
 
-#### 🔹 Change Button Colors
-In `Index.cshtml`, find these Bootstrap classes:
-- `btn-success` = Green (Upload button)
-- `btn-danger` = Red (Delete button)
-- `btn-info` = Blue (Download button)
+#### 🔹 เปลี่ยนสีปุ่ม
+ใน `Index.cshtml` หา Bootstrap classes เหล่านี้:
+- `btn-success` = สีเขียว (ปุ่มอัปโหลด)
+- `btn-danger` = สีแดง (ปุ่มลบ)
+- `btn-info` = สีฟ้า (ปุ่มดาวน์โหลด)
 
-**Available colors:** `btn-primary`, `btn-secondary`, `btn-success`, `btn-danger`, `btn-warning`, `btn-info`, `btn-light`, `btn-dark`
+**สีที่มี:** `btn-primary`, `btn-secondary`, `btn-success`, `btn-danger`, `btn-warning`, `btn-info`, `btn-light`, `btn-dark`
 
-#### 🔹 Change FTP Server
-**File:** `appsettings.json`
+#### 🔹 เปลี่ยน FTP Server
+**ไฟล์:** `appsettings.json`
 ```json
 "FtpSettings": {
-  "Host": "ftp.yourserver.com",  // Change IP or domain
+  "Host": "ftp.yourserver.com",  // เปลี่ยน IP หรือ domain
   "User": "yourusername",
   "Pass": "yourpassword"
 }
@@ -196,122 +194,45 @@ In `Index.cshtml`, find these Bootstrap classes:
 
 ---
 
-## 🎓 Professor Interview Q&A
+## 🚀 วิธีรันโปรเจกต์
 
-### BASICS & CONCEPT
-
-**Q: What is SproutFTP and what does it do?**
-> **A:** SproutFTP is a web-based FTP file manager built with ASP.NET Core. It allows users to upload, view, download, and delete files on a remote FTP server through a web browser interface.
-
-**Q: What is FTP and why use it?**
-> **A:** FTP (File Transfer Protocol) is a standard network protocol used to transfer files between a client and a server. We use FluentFTP library because it provides a simple, async/await API for .NET applications.
-
-**Q: What technology stack did you use?**
-> **A:** ASP.NET Core 10.0 (Razor Pages), FluentFTP v53.0.2, Bootstrap 5, jQuery, C#
-
----
-
-### HOW THE CODE WORKS
-
-**Q: Explain how file upload works in your application.**
-> **A:** When user selects a file and clicks Upload:
-> 1. Form sends file to `OnPostUploadAsync()` in Index.cshtml.cs
-> 2. Creates FTP connection using `GetFtpClient()`
-> 3. Opens file as stream with `UploadedFile.OpenReadStream()`
-> 4. Uploads stream to FTP server using `client.UploadStream()`
-> 5. On success, page redirects to refresh and show new file
-
-**Q: How do you display the list of files from the FTP server?**
-> **A:** When page loads, `OnGetAsync()` calls `LoadFileList()` which connects to FTP server and uses `client.GetListing()` to get all files. Results are stored in `FileList` property and displayed in Index.cshtml using a foreach loop.
-
-**Q: What is FluentFTP and why did you choose it?**
-> **A:** FluentFTP is a popular .NET library for FTP operations. It provides async/await support, a clean API, and is well-maintained.
-
----
-
-### CONFIGURATION
-
-**Q: Where do you store FTP server credentials?**
-> **A:** In `appsettings.json` under "FtpSettings" section. This is injected via ASP.NET Core's dependency injection.
-
-**Q: Why did you set EncryptionMode to None and use IPv4?**
-> **A:** These settings fix connection timeout issues:
-> - `EncryptionMode = None` - Disables SSL/TLS for simpler local testing
-> - `IPv4` - Forces IPv4 to avoid compatibility issues
-
----
-
-### CODING & MODIFICATION
-
-**Q: How would you add a new feature (e.g., create folder)?**
-> **A:** Add a new method in `Index.cshtml.cs`:
-> ```csharp
-> public async Task<IActionResult> OnPostCreateFolderAsync(string folderName)
-> {
->     using var client = GetFtpClient();
->     await client.Connect();
->     await client.CreateDirectory(folderName);
->     return RedirectToPage();
-> }
-> ```
-
-**Q: How would you change the FTP server address?**
-> **A:** Edit `appsettings.json` - change the "Host" value to your server address.
-
----
-
-### ERROR HANDLING
-
-**Q: What happens if the FTP server is down?**
-> **A:** The code has try-catch blocks. If connection fails, it catches the exception, adds error message to ModelState, and displays error to user instead of crashing.
-
----
-
-### CHALLENGES & SOLUTIONS
-
-**Q: What challenges did you face during development?**
-> **A:** Two main challenges:
-> 1. **Connection Timeout** - Solved by setting `EncryptionMode = None` and `IPv4`
-> 2. **Ambiguous Method Call** - Solved by explicitly passing `CancellationToken.None`
-
----
-
-## 🚀 How to Run the Project
-
-### Prerequisites:
+### ข้อกำหนดเบื้องต้น:
 - .NET 10.0 SDK
-- An FTP server running (or use local FTP)
+- FTP server (หรือใช้ local FTP)
 
-### Steps:
-1. Open terminal in project folder
-2. Run: `dotnet run`
-3. Open browser to `https://localhost:7000` (or port shown)
+### ขั้นตอน:
+1. เปิด terminal ในโฟลเดอร์โปรเจกต์
+2. รันคำสั่ง: `dotnet run`
+3. เปิดเบราว์เซอร์ไปที่ `https://localhost:7000` (หรือ port ที่แสดง)
 
-### To change port:
-Edit `Properties/launchSettings.json` - find `applicationUrl` setting.
-
----
-
-## 📞 Quick Reference Card
-
-| Task | File to Edit |
-|------|--------------|
-| Change title text | `Pages/Index.cshtml` line 6, 9 |
-| Change colors | `Pages/Index.cshtml` (btn classes) |
-| Change FTP server | `appsettings.json` |
-| Add new feature | `Pages/Index.cshtml.cs` |
-| Change layout | `Pages/Shared/_Layout.cshtml` |
-| Custom styles | `wwwroot/css/site.css` |
+### เปลี่ยน port:
+แก้ไข `Properties/launchSettings.json` - หา `applicationUrl` setting
 
 ---
 
-## 👨‍🎓 Student Info
+## 📞 คู่มืออ้างอิงด่วน
 
-**Project:** SproutFTP - FTP File Manager  
-**Student:** นายวีรพงศ์ วสุมงคลพจน์  
-**ID:** 670112418022  
-**Major:** สาขาเทคโนโลยีสารสนเทศ หมู่ 1
+| งาน | ไฟล์ที่แก้ไข |
+|------|-------------|
+| เปลี่ยนข้อความหัวข้อ | `Pages/Index.cshtml` บรรทัด 6, 9 |
+| เปลี่ยนสี | `Pages/Index.cshtml` (btn classes) |
+| เปลี่ยน FTP server | `appsettings.json` |
+| เพิ่มฟีเจอร์ใหม่ | `Pages/Index.cshtml.cs` |
+| เปลี่ยน layout | `Pages/Shared/_Layout.cshtml` |
+| สไตล์ที่กำหนดเอง | `wwwroot/css/site.css` |
 
 ---
 
-*Last Updated: February 2026*
+## 👨‍🎓 ข้อมูลนักศึกษา
+
+**โครงงาน:** SproutFTP - ระบบจัดการไฟล์ FTP  
+**นักศึกษา:** นายวีรพงศ์ วสุมงคลพจน์  
+**รหัส:** 670112418022  
+**สาขา:** สาขาเทคโนโลยีสารสนเทศ หมู่ 1
+
+**นักศึกษา:** นายอานันดา สะอาดรัมย์
+**รหัส:** 670112418027 
+**สาขา:** สาขาเทคโนโลยีสารสนเทศ หมู่ 1
+---
+
+*อัปเดตล่าสุด: กุมภาพันธ์ 2026*
