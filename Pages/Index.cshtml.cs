@@ -1,7 +1,6 @@
 ﻿using FluentFTP;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.ComponentModel.DataAnnotations;
 
 namespace SproutFTP.Pages
 {
@@ -59,8 +58,6 @@ namespace SproutFTP.Pages
                 await client.Connect();
                 
                 // ดึงรายการไฟล์และโฟลเดอร์จาก FTP Server
-                // ForceList: บังคับโหลดใหม่ไม่ใช้ Cache
-                // null: ดูจากโฟลเดอร์ปัจจุบัน
                 var items = await client.GetListing(null, FtpListOption.ForceList);
                 FileList = items.ToList();
             }
