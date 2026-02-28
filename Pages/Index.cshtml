@@ -1,0 +1,95 @@
+@page
+@inject IConfiguration Config
+@{
+    // --- ส่วนของ Logic (C# ล้วนๆ) ---
+    AsyncFtpClient GetFtpClient()
+    {
+        return new AsyncFtpClient("127.0.0.1", "admin", "1234", 21);
+    }
+
+    // 1. โหลดรายการไฟล์
+    using var client = GetFtpClient();
+    await client.Connect();
+    var items = await client.GetListing(null, FtpListOption.ForceList);
+    await client.Disconnect();
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sprout FTP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-5">
+    <h1>🌱 Sprout FTP</h1>
+
+    <!-- ส่วนอัปโหลด: ใช้ Form มาตรฐานส่งหา Handler ในไฟล์นี้ -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="post" asp-page-handler="Upload" enctype="multipart/form-data" class="d-flex gap-2">
+                <input type="file" name="file" class="form-control" required>
+                <button type="submit" class="btn btn-success">Upload</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ส่วนตาราง: วนลูปแสดงผล HTML ตรงๆ ไม่ต้องต่อ String -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Size</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in items.Where(x => x.Type == FtpObjectType.File))
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@(item.Size / 1024) KB</td>
+                    <td class="text-center">
+                        <a asp-page-handler="Download" asp-route-name="@item.Name"
+                           class="btn btn-sm btn-info text-white">Download</a>
+                        <form method="post" asp-page-handler="Delete" asp-route-name="@item.Name" style="display:inline">
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('ลบไหม?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>
+
+@functions {
+    // --- ส่วนของ Action Handlers (C# Logic สำหรับปุ่มกด) ---
+
+    public async Task<IActionResult> OnPostUploadAsync(IFormFile file)
+    {
+        if (file != null)
+        {
+            using var client = new AsyncFtpClient("127.0.0.1", "admin", "1234", 21);
+            await client.Connect();
+            using var stream = file.OpenReadStream();
+            await client.UploadStream(stream, file.FileName, FtpRemoteExists.Overwrite);
+        }
+        return RedirectToPage();
+    }
+
+    public async Task<IActionResult> OnGetDownloadAsync(string name)
+    {
+        using var client = new AsyncFtpClient("127.0.0.1", "admin", "1234", 21);
+        await client.Connect();
+        var bytes = await client.DownloadBytes(name, CancellationToken.None);
+        return File(bytes, "application/octet-stream", name);
+    }
+
+    public async Task<IActionResult> OnPostDeleteAsync(string name)
+    {
+        using var client = new AsyncFtpClient("127.0.0.1", "admin", "1234", 21);
+        await client.Connect();
+        await client.DeleteFile(name);
+        return RedirectToPage();
+    }
+}

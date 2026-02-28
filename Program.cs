@@ -1,19 +1,11 @@
 ﻿var builder = WebApplication.CreateBuilder(args);
-
-// เปิดใช้งาน Razor Pages
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(); // เปิดใช้งาน Razor Pages
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-}
+app.UseStaticFiles(); // บอกให้ระบบวิ่งไปหาไฟล์ในโฟลเดอร์ wwwroot เช่น css, js, images เป็นต้น
+app.UseRouting(); // บอกให้ระบบวิ่งไปหาไฟล์ในโฟลเดอร์ Pages และ Controllers เพื่อทำการ Routing ไปยังหน้าเว็บที่ต้องการ
 
-app.UseStaticFiles(); // เปิดใช้งานการให้บริการไฟล์สถิต (เช่น CSS, JS) จาก wwwroot
-app.UseRouting(); // เปิดใช้งานการกำหนดเส้นทาง (Routing) เพื่อให้สามารถเข้าถึงหน้าเว็บได้
-
-// Map Route เข้ากับหน้าเว็บ
-app.MapRazorPages();
+app.MapRazorPages(); // บอกให้ระบบวิ่งไปหาไฟล์ในโฟลเดอร์ Pages
 
 app.Run();
