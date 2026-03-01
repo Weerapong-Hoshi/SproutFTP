@@ -1,13 +1,7 @@
 @page
 @inject IConfiguration Config
 @{
-    // --- ส่วนของ Logic (C# ล้วนๆ) ---
-    AsyncFtpClient GetFtpClient()
-    {
-        return new AsyncFtpClient("127.0.0.1", "admin", "1234", 21);
-    }
-
-    // 1. โหลดรายการไฟล์
+    // Load file list using shared client factory
     using var client = GetFtpClient();
     await client.Connect();
     var items = await client.GetListing(null, FtpListOption.ForceList);
@@ -23,17 +17,17 @@
 <body class="container mt-5">
     <h1>🌱 Sprout FTP</h1>
 
-    <!-- ส่วนอัปโหลด: ใช้ Form มาตรฐานส่งหา Handler ในไฟล์นี้ -->
+    <!-- Upload form -->
     <div class="card mb-4">
         <div class="card-body">
             <form method="post" asp-page-handler="Upload" enctype="multipart/form-data" class="d-flex gap-2">
-                <input type="file" name="file" class="form-control" required>
+                <input type="file" name="file" class="form-control" accept="image/*" required>
                 <button type="submit" class="btn btn-success">Upload</button>
             </form>
         </div>
     </div>
 
-    <!-- ส่วนตาราง: วนลูปแสดงผล HTML ตรงๆ ไม่ต้องต่อ String -->
+    <!-- File table -->
     <table class="table table-striped">
         <thead>
             <tr>
@@ -52,7 +46,7 @@
                         <a asp-page-handler="Download" asp-route-name="@item.Name"
                            class="btn btn-sm btn-info text-white">Download</a>
                         <form method="post" asp-page-handler="Delete" asp-route-name="@item.Name" style="display:inline">
-                            <button class="btn btn-sm btn-danger" onclick="return confirm('ลบไหม?')">Delete</button>
+                            <button class="btn btn-sm btn-danger" onclick="return confirm('Delete?')">Delete</button>
                         </form>
                     </td>
                 </tr>
@@ -63,13 +57,22 @@
 </html>
 
 @functions {
-    // --- ส่วนของ Action Handlers (C# Logic สำหรับปุ่มกด) ---
+    // Shared FTP client factory – reads settings from appsettings.json
+    private AsyncFtpClient GetFtpClient()
+    {
+        var host = Config["FtpSettings:Host"] ?? "127.0.0.1";
+        var user = Config["FtpSettings:User"] ?? "admin";
+        var pass = Config["FtpSettings:Pass"] ?? "1234";
+        var port = 21; // default, could also be read from config if needed
+        return new AsyncFtpClient(host, user, pass, port);
+    }
 
+    // Handlers
     public async Task<IActionResult> OnPostUploadAsync(IFormFile file)
     {
         if (file != null)
         {
-            using var client = new AsyncFtpClient("127.0.0.1", "admin", "1234", 21);
+            using var client = GetFtpClient();
             await client.Connect();
             using var stream = file.OpenReadStream();
             await client.UploadStream(stream, file.FileName, FtpRemoteExists.Overwrite);
@@ -79,7 +82,7 @@
 
     public async Task<IActionResult> OnGetDownloadAsync(string name)
     {
-        using var client = new AsyncFtpClient("127.0.0.1", "admin", "1234", 21);
+        using var client = GetFtpClient();
         await client.Connect();
         var bytes = await client.DownloadBytes(name, CancellationToken.None);
         return File(bytes, "application/octet-stream", name);
@@ -87,7 +90,7 @@
 
     public async Task<IActionResult> OnPostDeleteAsync(string name)
     {
-        using var client = new AsyncFtpClient("127.0.0.1", "admin", "1234", 21);
+        using var client = GetFtpClient();
         await client.Connect();
         await client.DeleteFile(name);
         return RedirectToPage();

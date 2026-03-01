@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌱 Sprout FTP — Presentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+Thai:wght@300;400;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00ff88;
+    --dark-green: #00c96b;
+    --bg: #0a0f0d;
+    --surface: #111a14;
+    --card: #162019;
+    --border: #1e3325;
+    --text: #e8f5ec;
+    --muted: #6b9c7a;
+    --accent: #39ff99;
+    --orange: #ff8c42;
+    --blue: #42c8ff;
+    --slide-count: 11;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans Thai', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* ─── GRID BACKGROUND ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── SLIDES WRAPPER ─── */
+  .slides-wrapper {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    z-index: 1;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 80px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: all 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  .slide.exit {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ─── SLIDE NUMBER TAG ─── */
+  .slide-tag {
+    position: absolute;
+    top: 28px;
+    left: 40px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  /* ─── NAV ─── */
+  .nav {
+    position: fixed;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 100;
+    background: rgba(10,15,13,0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 10px 20px;
+  }
+
+  .nav-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--green);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .nav-btn:hover {
+    background: var(--green);
+    color: var(--bg);
+    border-color: var(--green);
+  }
+
+  .dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .dot.active {
+    background: var(--green);
+    width: 20px;
+    border-radius: 3px;
+  }
+
+  .slide-counter {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    min-width: 50px;
+    text-align: center;
+  }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: var(--green);
+    transition: width 0.4s ease;
+    z-index: 100;
+    box-shadow: 0 0 8px var(--green);
+  }
+
+  /* ─── COMMON ELEMENTS ─── */
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 8vw, 110px);
+    line-height: 0.95;
+    letter-spacing: 2px;
+    color: var(--text);
+  }
+
+  h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 5vw, 64px);
+    letter-spacing: 1px;
+    color: var(--text);
+    margin-bottom: 32px;
+  }
+
+  .accent { color: var(--green); }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+  }
+
+  .tag {
+    display: inline-block;
+    background: rgba(0,255,136,0.1);
+    border: 1px solid rgba(0,255,136,0.3);
+    color: var(--green);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+
+  /* ─────────────────────────────
+     SLIDE 1 — COVER
+  ───────────────────────────── */
+  #slide-1 {
+    text-align: center;
+    position: relative;
+  }
+
+  #slide-1 .glow-bg {
+    position: absolute;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(0,255,136,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  #slide-1 .cover-icon {
+    font-size: 72px;
+    margin-bottom: 8px;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  #slide-1 h1 {
+    font-size: clamp(80px, 11vw, 140px);
+    background: linear-gradient(135deg, var(--text) 40%, var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  #slide-1 .subtitle {
+    font-size: 18px;
+    color: var(--muted);
+    margin-top: 12px;
+    font-weight: 300;
+  }
+
+  #slide-1 .tech-pills {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  #slide-1 .pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* ─────────────────────────────
+     SLIDE 2 — OVERVIEW
+  ───────────────────────────── */
+  #slide-2 .content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    width: 100%;
+    max-width: 960px;
+  }
+
+  #slide-2 .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border-color 0.2s;
+  }
+
+  #slide-2 .feature-item:hover { border-color: var(--green); }
+
+  #slide-2 .feature-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  #slide-2 .feature-text h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  #slide-2 .feature-text p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ─────────────────────────────
+     SLIDE 3 — FTP EXPLAINED
+  ───────────────────────────── */
+  #slide-3 .content {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 40px;
+    width: 100%;
+    max-width: 960px;
+    align-items: center;
+  }
+
+  #slide-3 .ftp-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #slide-3 .cmd-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+  }
+
+  #slide-3 .cmd-name {
+    color: var(--green);
+    min-width: 50px;
+    font-weight: 700;
+  }
+
+  #slide-3 .cmd-desc { color: var(--muted); font-size: 12px; }
+
+  #slide-3 .flow-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+  }
+
+  #slide-3 .flow-step {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  #slide-3 .flow-step:last-child { border-bottom: none; }
+
+  #slide-3 .step-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green);
+    width: 28px;
+  }
+
+  #slide-3 .step-txt { font-size: 14px; color: var(--text); }
+
+  /* ─────────────────────────────
+     SLIDE 4 — ARCHITECTURE
+  ───────────────────────────── */
+  #slide-4 .arch-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    max-width: 900px;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  #slide-4 .arch-node {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-align: center;
+    min-width: 130px;
+  }
+
+  #slide-4 .arch-node .node-icon { font-size: 32px; margin-bottom: 8px; }
+  #slide-4 .arch-node .node-label { font-size: 13px; font-weight: 700; color: var(--text); }
+  #slide-4 .arch-node .node-sub { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; margin-top: 4px; }
+
+  #slide-4 .arch-node.highlight {
+    border-color: var(--green);
+    background: rgba(0,255,136,0.05);
+    box-shadow: 0 0 20px rgba(0,255,136,0.1);
+  }
+
+  #slide-4 .arrow {
+    color: var(--green);
+    font-size: 20px;
+    margin: 0 4px;
+    opacity: 0.7;
+  }
+
+  #slide-4 .port-info {
+    margin-top: 32px;
+    display: flex;
+    gap: 16px;
+  }
+
+  #slide-4 .port-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  #slide-4 .port-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--blue);
+  }
+
+  #slide-4 .port-desc { font-size: 13px; color: var(--muted); }
+
+  /* ─────────────────────────────
+     SLIDE 5 — TECH STACK
+  ───────────────────────────── */
+  #slide-5 .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    max-width: 900px;
+    width: 100%;
+  }
+
+  #slide-5 .tech-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 16px;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: default;
+  }
+
+  #slide-5 .tech-card:hover {
+    border-color: var(--green);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,255,136,0.1);
+  }
+
+  #slide-5 .tech-icon { font-size: 36px; margin-bottom: 10px; }
+  #slide-5 .tech-name { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  #slide-5 .tech-role { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+
+  /* ─────────────────────────────
+     SLIDE 6 — DOCKER
+  ───────────────────────────── */
+  #slide-6 .content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    max-width: 960px;
+    width: 100%;
+    align-items: start;
+  }
+
+  #slide-6 .code-block {
+    background: #0d1a10;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    line-height: 2;
+    overflow: hidden;
+  }
+
+  #slide-6 .code-block .c-key { color: #ff8c42; }
+  #slide-6 .code-block .c-val { color: var(--green); }
+  #slide-6 .code-block .c-comment { color: var(--muted); }
+  #slide-6 .code-block .c-str { color: var(--blue); }
+
+  #slide-6 .config-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #slide-6 .config-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+  }
+
+  #slide-6 .config-item .key {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--orange);
+    margin-bottom: 4px;
+  }
+
+  #slide-6 .config-item .val {
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  /* ─────────────────────────────
+     SLIDE 7 — HOW TO RUN
+  ───────────────────────────── */
+  #slide-7 .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 700px;
+    width: 100%;
+  }
+
+  #slide-7 .run-step {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #slide-7 .run-step::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--green);
+  }
+
+  #slide-7 .step-circle {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 2px solid var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green);
+    flex-shrink: 0;
+  }
+
+  #slide-7 .step-body h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+
+  #slide-7 .cmd-tag {
+    background: #0d1a10;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--green);
+    display: inline-block;
+  }
+
+  /* ─────────────────────────────
+     SLIDE 8 — PROJECT STRUCTURE
+  ───────────────────────────── */
+  #slide-8 .content {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 32px;
+    max-width: 960px;
+    width: 100%;
+    align-items: start;
+  }
+
+  #slide-8 .tree {
+    background: #0d1a10;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    line-height: 2;
+  }
+
+  #slide-8 .tree .t-folder { color: var(--orange); }
+  #slide-8 .tree .t-file { color: var(--text); }
+  #slide-8 .tree .t-key { color: var(--green); }
+  #slide-8 .tree .t-dim { color: var(--muted); }
+
+  #slide-8 .legend {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #slide-8 .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  #slide-8 .legend-icon { font-size: 20px; flex-shrink: 0; }
+  #slide-8 .legend-text { font-size: 13px; }
+  #slide-8 .legend-name { color: var(--green); font-family: 'Space Mono', monospace; font-size: 12px; }
+
+  /* ─────────────────────────────
+     SLIDE 9 — SYSTEM FLOW
+  ───────────────────────────── */
+  #slide-9 .flow-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 860px;
+    width: 100%;
+  }
+
+  #slide-9 .flow-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+  }
+
+  #slide-9 .flow-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  #slide-9 .flow-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #slide-9 .flow-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  #slide-9 .flow-item .n {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--green);
+    width: 18px;
+    flex-shrink: 0;
+  }
+
+  /* ─────────────────────────────
+     SLIDE 10 — SECURITY & FUTURE
+  ───────────────────────────── */
+  #slide-10 .content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    max-width: 960px;
+    width: 100%;
+  }
+
+  #slide-10 .sec-list, #slide-10 .fut-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  #slide-10 .list-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+
+  #slide-10 .list-item .icon { font-size: 20px; flex-shrink: 0; }
+
+  /* ─────────────────────────────
+     SLIDE 11 — SUMMARY
+  ───────────────────────────── */
+  #slide-11 {
+    text-align: center;
+  }
+
+  #slide-11 .summary-grid {
+    display: flex;
+    gap: 16px;
+    margin-top: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  #slide-11 .sum-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 20px;
+    min-width: 140px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  #slide-11 .sum-card:hover {
+    border-color: var(--green);
+    transform: translateY(-4px);
+  }
+
+  #slide-11 .sum-icon { font-size: 36px; margin-bottom: 10px; }
+  #slide-11 .sum-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; font-family: 'Space Mono', monospace; }
+  #slide-11 .sum-val { font-size: 15px; font-weight: 700; color: var(--green); }
+
+  #slide-11 .tagline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 4vw, 52px);
+    color: var(--muted);
+    margin-top: 36px;
+    letter-spacing: 3px;
+  }
+
+  #slide-11 .tagline span { color: var(--green); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .slide { padding: 40px 24px 80px; }
+    #slide-2 .content, #slide-3 .content, #slide-4 .arch-flow,
+    #slide-6 .content, #slide-8 .content, #slide-10 .content { grid-template-columns: 1fr; }
+    #slide-5 .tech-grid { grid-template-columns: repeat(3, 1fr); }
+    #slide-9 .flow-grid { grid-template-columns: 1fr; }
+    h2 { font-size: 32px; }
+    .slide { justify-content: flex-start; padding-top: 60px; overflow-y: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progress"></div>
+
+<!-- SLIDES -->
+<div class="slides-wrapper">
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide active" id="slide-1">
+    <div class="glow-bg"></div>
+    <div class="slide-tag">00 — INTRO</div>
+    <div class="cover-icon">🌱</div>
+    <h1>SPROUT FTP</h1>
+    <p class="subtitle">เว็บแอปจัดการไฟล์ผ่าน FTP Protocol</p>
+    <div class="tech-pills">
+      <span class="pill">C# / ASP.NET</span>
+      <span class="pill">FluentFTP</span>
+      <span class="pill">Docker</span>
+      <span class="pill">Razor Pages</span>
+      <span class="pill">Bootstrap</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: OVERVIEW -->
+  <div class="slide" id="slide-2">
+    <div class="slide-tag">01 — OVERVIEW</div>
+    <div class="section-label">โปรเจกต์นี้คืออะไร?</div>
+    <h2>ภาพรวม <span class="accent">โปรเจกต์</span></h2>
+    <div class="content">
+      <div class="feature-item">
+        <div class="feature-icon">📤</div>
+        <div class="feature-text">
+          <h3>อัปโหลดไฟล์</h3>
+          <p>ส่งไฟล์ไปยัง FTP Server ผ่านหน้าเว็บ โดยไม่ต้องใช้ FileZilla</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📥</div>
+        <div class="feature-text">
+          <h3>ดาวน์โหลดไฟล์</h3>
+          <p>ดึงไฟล์กลับมาจาก FTP Server ผ่าน Browser ได้โดยตรง</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🗂</div>
+        <div class="feature-text">
+          <h3>ดูรายการไฟล์</h3>
+          <p>แสดงรายชื่อไฟล์ทั้งหมดที่อยู่บน FTP Server แบบ Real-time</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🗑</div>
+        <div class="feature-text">
+          <h3>ลบไฟล์</h3>
+          <p>จัดการและลบไฟล์ที่ไม่ต้องการออกจาก Server ได้ทันที</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: FTP EXPLAINED -->
+  <div class="slide" id="slide-3">
+    <div class="slide-tag">02 — CONCEPT</div>
+    <div class="section-label">สำหรับผู้เริ่มต้น</div>
+    <h2>FTP <span class="accent">คืออะไร?</span></h2>
+    <div class="content">
+      <div class="ftp-diagram">
+        <div class="cmd-row">
+          <span class="cmd-name">LIST</span>
+          <span class="cmd-desc">→ ขอรายชื่อไฟล์ทั้งหมด</span>
+        </div>
+        <div class="cmd-row">
+          <span class="cmd-name">STOR</span>
+          <span class="cmd-desc">→ อัปโหลดไฟล์ขึ้น Server</span>
+        </div>
+        <div class="cmd-row">
+          <span class="cmd-name">RETR</span>
+          <span class="cmd-desc">→ ดาวน์โหลดไฟล์จาก Server</span>
+        </div>
+        <div class="cmd-row">
+          <span class="cmd-name">DELE</span>
+          <span class="cmd-desc">→ ลบไฟล์บน Server</span>
+        </div>
+      </div>
+      <div class="flow-box">
+        <div style="font-size:13px; color:var(--muted); margin-bottom:14px;">ลำดับการทำงานของ FTP</div>
+        <div class="flow-step">
+          <span class="step-num">01</span>
+          <span class="step-txt">Client เชื่อมต่อไปยัง Server (Port 21)</span>
+        </div>
+        <div class="flow-step">
+          <span class="step-num">02</span>
+          <span class="step-txt">Login ด้วย Username / Password</span>
+        </div>
+        <div class="flow-step">
+          <span class="step-num">03</span>
+          <span class="step-txt">ส่งคำสั่ง (LIST, STOR, RETR, DELE)</span>
+        </div>
+        <div class="flow-step">
+          <span class="step-num">04</span>
+          <span class="step-txt">Server ตอบกลับตามคำสั่ง</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: ARCHITECTURE -->
+  <div class="slide" id="slide-4">
+    <div class="slide-tag">03 — ARCHITECTURE</div>
+    <div class="section-label">ภาพรวมระบบ</div>
+    <h2>สถาปัตยกรรม <span class="accent">ระบบ</span></h2>
+    <div class="arch-flow">
+      <div class="arch-node">
+        <div class="node-icon">👤</div>
+        <div class="node-label">ผู้ใช้</div>
+        <div class="node-sub">User</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="arch-node">
+        <div class="node-icon">🌐</div>
+        <div class="node-label">เว็บเบราว์เซอร์</div>
+        <div class="node-sub">HTTP</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="arch-node highlight">
+        <div class="node-icon">⚙️</div>
+        <div class="node-label">ASP.NET App</div>
+        <div class="node-sub">C# Backend</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="arch-node">
+        <div class="node-icon">🖥️</div>
+        <div class="node-label">FTP Server</div>
+        <div class="node-sub">vsftpd</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="arch-node">
+        <div class="node-icon">🗄️</div>
+        <div class="node-label">Storage</div>
+        <div class="node-sub">ftp-data/</div>
+      </div>
+    </div>
+    <div class="port-info">
+      <div class="port-card">
+        <div class="port-num">21</div>
+        <div>
+          <div style="font-size:13px; font-weight:700;">Control Port</div>
+          <div class="port-desc">ส่งคำสั่ง Login / LIST / STOR</div>
+        </div>
+      </div>
+      <div class="port-card">
+        <div class="port-num">21100<br>–21110</div>
+        <div>
+          <div style="font-size:13px; font-weight:700;">Data Port (Passive)</div>
+          <div class="port-desc">ส่งข้อมูลไฟล์จริง ๆ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: TECH STACK -->
+  <div class="slide" id="slide-5">
+    <div class="slide-tag">04 — STACK</div>
+    <div class="section-label">เทคโนโลยี</div>
+    <h2>Tech <span class="accent">Stack</span></h2>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tech-icon">⚡</div>
+        <div class="tech-name">C#</div>
+        <div class="tech-role">Backend Language</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🪒</div>
+        <div class="tech-name">Razor Pages</div>
+        <div class="tech-role">ASP.NET Framework</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">📡</div>
+        <div class="tech-name">FluentFTP</div>
+        <div class="tech-role">FTP Library</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🐳</div>
+        <div class="tech-name">Docker</div>
+        <div class="tech-role">Container</div>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🅱️</div>
+        <div class="tech-name">Bootstrap</div>
+        <div class="tech-role">UI Framework</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: DOCKER CONFIG -->
+  <div class="slide" id="slide-6">
+    <div class="slide-tag">05 — DOCKER</div>
+    <div class="section-label">การ Config</div>
+    <h2>Docker <span class="accent">Setup</span></h2>
+    <div class="content">
+      <div class="code-block">
+        <div><span class="c-key">image:</span> <span class="c-str">delfer/alpine-ftp-server</span></div>
+        <div><span class="c-key">container:</span> <span class="c-str">sprout-ftp-server</span></div>
+        <div>&nbsp;</div>
+        <div><span class="c-key">ports:</span></div>
+        <div>&nbsp; - <span class="c-val">"21:21"</span> <span class="c-comment"># Control</span></div>
+        <div>&nbsp; - <span class="c-val">"21100-21110"</span> <span class="c-comment"># Data</span></div>
+        <div>&nbsp;</div>
+        <div><span class="c-key">environment:</span></div>
+        <div>&nbsp; USERS=<span class="c-val">admin|1234</span></div>
+        <div>&nbsp; ADDRESS=<span class="c-val">127.0.0.1</span></div>
+        <div>&nbsp;</div>
+        <div><span class="c-key">volumes:</span></div>
+        <div>&nbsp; <span class="c-val">./ftp-data:/ftp/admin</span></div>
+      </div>
+      <div class="config-list">
+        <div class="config-item">
+          <div class="key">USERS</div>
+          <div class="val">สร้าง user: admin / รหัส: 1234</div>
+        </div>
+        <div class="config-item">
+          <div class="key">PORTS</div>
+          <div class="val">เปิด Port 21 (Control) และ 21100-21110 (Passive Data)</div>
+        </div>
+        <div class="config-item">
+          <div class="key">VOLUMES</div>
+          <div class="val">ผูกโฟลเดอร์ ftp-data กับ Container</div>
+        </div>
+        <div class="config-item">
+          <div class="key">IMAGE</div>
+          <div class="val">Alpine Linux + vsftpd Server</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: HOW TO RUN -->
+  <div class="slide" id="slide-7">
+    <div class="slide-tag">06 — USAGE</div>
+    <div class="section-label">วิธีใช้งาน</div>
+    <h2>วิธี <span class="accent">รันโปรเจกต์</span></h2>
+    <div class="steps">
+      <div class="run-step">
+        <div class="step-circle">1</div>
+        <div class="step-body">
+          <h3>ติดตั้ง Docker Desktop</h3>
+          <p style="color:var(--muted); font-size:13px;">ดาวน์โหลดจาก docker.com แล้วติดตั้งให้เสร็จ</p>
+        </div>
+      </div>
+      <div class="run-step">
+        <div class="step-circle">2</div>
+        <div class="step-body">
+          <h3>รันคำสั่งเปิดระบบ</h3>
+          <div class="cmd-tag">$ docker-compose up</div>
+        </div>
+      </div>
+      <div class="run-step">
+        <div class="step-circle">3</div>
+        <div class="step-body">
+          <h3>เปิดเว็บไซต์</h3>
+          <div class="cmd-tag">http://localhost</div>
+        </div>
+      </div>
+      <div class="run-step">
+        <div class="step-circle">✕</div>
+        <div class="step-body">
+          <h3>หยุดระบบ</h3>
+          <div class="cmd-tag">$ docker-compose down</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: PROJECT STRUCTURE -->
+  <div class="slide" id="slide-8">
+    <div class="slide-tag">07 — STRUCTURE</div>
+    <div class="section-label">โครงสร้าง</div>
+    <h2>โครงสร้าง <span class="accent">โปรเจกต์</span></h2>
+    <div class="content">
+      <div class="tree">
+        <div><span class="t-folder">SproutFTP/</span></div>
+        <div>&nbsp;├── <span class="t-key">docker-compose.yml</span></div>
+        <div>&nbsp;├── <span class="t-file">appsettings.json</span></div>
+        <div>&nbsp;├── <span class="t-key">Program.cs</span></div>
+        <div>&nbsp;├── <span class="t-folder">Pages/</span></div>
+        <div>&nbsp;│&nbsp;&nbsp; ├── <span class="t-key">Index.cshtml</span></div>
+        <div>&nbsp;│&nbsp;&nbsp; └── <span class="t-file">Index.cshtml.cs</span></div>
+        <div>&nbsp;├── <span class="t-folder">ftp-data/</span></div>
+        <div>&nbsp;└── <span class="t-file">SproutFTP.csproj</span></div>
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-icon">⚙️</div>
+          <div class="legend-text">
+            <div class="legend-name">Program.cs</div>
+            <div style="font-size:12px; color:var(--muted);">จุดเริ่มต้น App — Config Razor Pages + Routing</div>
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-icon">📄</div>
+          <div class="legend-text">
+            <div class="legend-name">Index.cshtml</div>
+            <div style="font-size:12px; color:var(--muted);">หน้าเว็บหลัก — แสดงผล + รับ Input จาก User</div>
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-icon">🐳</div>
+          <div class="legend-text">
+            <div class="legend-name">docker-compose.yml</div>
+            <div style="font-size:12px; color:var(--muted);">Config FTP Server ใน Container</div>
+          </div>
+        </div>
+        <div class="legend-item">
+          <div class="legend-icon">📁</div>
+          <div class="legend-text">
+            <div class="legend-name">ftp-data/</div>
+            <div style="font-size:12px; color:var(--muted);">โฟลเดอร์เก็บไฟล์จริงจาก FTP Server</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: SYSTEM FLOW -->
+  <div class="slide" id="slide-9">
+    <div class="slide-tag">08 — FLOW</div>
+    <div class="section-label">การทำงาน</div>
+    <h2>ลำดับ <span class="accent">การทำงาน</span></h2>
+    <div class="flow-grid">
+      <div class="flow-card">
+        <div class="flow-title">📂 เปิดหน้าเว็บ (GET)</div>
+        <div class="flow-list">
+          <div class="flow-item"><span class="n">01</span> Browser ส่ง HTTP GET</div>
+          <div class="flow-item"><span class="n">02</span> Web App เชื่อมต่อ FTP</div>
+          <div class="flow-item"><span class="n">03</span> ดึงรายการไฟล์ด้วย LIST</div>
+          <div class="flow-item"><span class="n">04</span> ส่ง HTML กลับแสดงผล</div>
+        </div>
+      </div>
+      <div class="flow-card">
+        <div class="flow-title">📤 อัปโหลดไฟล์ (POST)</div>
+        <div class="flow-list">
+          <div class="flow-item"><span class="n">01</span> Browser ส่ง HTTP POST + ไฟล์</div>
+          <div class="flow-item"><span class="n">02</span> Web App รับ IFormFile</div>
+          <div class="flow-item"><span class="n">03</span> FluentFTP อัปโหลดด้วย STOR</div>
+          <div class="flow-item"><span class="n">04</span> Redirect กลับหน้าเดิม</div>
+        </div>
+      </div>
+      <div class="flow-card">
+        <div class="flow-title">📥 ดาวน์โหลดไฟล์ (GET)</div>
+        <div class="flow-list">
+          <div class="flow-item"><span class="n">01</span> Browser ส่ง HTTP GET + ชื่อไฟล์</div>
+          <div class="flow-item"><span class="n">02</span> Web App ดึงไฟล์จาก FTP (RETR)</div>
+          <div class="flow-item"><span class="n">03</span> ส่งไฟล์กลับด้วย IActionResult</div>
+        </div>
+      </div>
+      <div class="flow-card">
+        <div class="flow-title">🗑 ลบไฟล์ (POST)</div>
+        <div class="flow-list">
+          <div class="flow-item"><span class="n">01</span> Browser ส่ง HTTP POST + ชื่อไฟล์</div>
+          <div class="flow-item"><span class="n">02</span> Web App สั่ง DeleteFile (DELE)</div>
+          <div class="flow-item"><span class="n">03</span> Redirect กลับหน้าเดิม</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: SECURITY & FUTURE -->
+  <div class="slide" id="slide-10">
+    <div class="slide-tag">09 — FUTURE</div>
+    <div class="section-label">อนาคตของโปรเจกต์</div>
+    <h2>ความปลอดภัย & <span class="accent">แนวทางต่อยอด</span></h2>
+    <div class="content">
+      <div>
+        <div style="font-family:'Space Mono',monospace; font-size:11px; color:var(--orange); letter-spacing:3px; margin-bottom:16px;">🔐 SECURITY</div>
+        <div class="sec-list">
+          <div class="list-item"><span class="icon">📏</span> จำกัดขนาดไฟล์สูงสุด</div>
+          <div class="list-item"><span class="icon">🔍</span> ตรวจสอบประเภทไฟล์จริง (ไม่ใช่แค่นามสกุล)</div>
+          <div class="list-item"><span class="icon">🔑</span> เพิ่มระบบ Login บนหน้าเว็บ</div>
+          <div class="list-item"><span class="icon">🔒</span> เปลี่ยนเป็น FTPS (เข้ารหัส)</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:'Space Mono',monospace; font-size:11px; color:var(--green); letter-spacing:3px; margin-bottom:16px;">🌟 ROADMAP</div>
+        <div class="fut-list">
+          <div class="list-item"><span class="icon">👥</span> ระบบสมัครสมาชิก</div>
+          <div class="list-item"><span class="icon">📁</span> รองรับโฟลเดอร์ย่อย</div>
+          <div class="list-item"><span class="icon">🖼</span> Preview รูปภาพ</div>
+          <div class="list-item"><span class="icon">☁️</span> เปลี่ยนเป็น Cloud Storage</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: SUMMARY -->
+  <div class="slide" id="slide-11">
+    <div class="slide-tag">10 — SUMMARY</div>
+    <div class="section-label">สรุป</div>
+    <h2>สรุป <span class="accent">โปรเจกต์</span></h2>
+    <div class="summary-grid">
+      <div class="sum-card">
+        <div class="sum-icon">🐳</div>
+        <div class="sum-label">Docker</div>
+        <div class="sum-val">ตู้เก็บไฟล์</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-icon">📡</div>
+        <div class="sum-label">FTP Server</div>
+        <div class="sum-val">ระบบจัดการตู้</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-icon">⚙️</div>
+        <div class="sum-label">ASP.NET App</div>
+        <div class="sum-val">พนักงานรับคำสั่ง</div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-icon">🌐</div>
+        <div class="sum-label">Browser</div>
+        <div class="sum-val">ลูกค้า</div>
+      </div>
+    </div>
+    <div class="tagline">ผู้ใช้ → เว็บ → FTP → <span>ไฟล์</span></div>
+  </div>
+
+</div><!-- end slides-wrapper -->
+
+<!-- NAVIGATION -->
+<div class="nav">
+  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">←</button>
+  <div class="dots" id="dots"></div>
+  <span class="slide-counter" id="counter">1 / 11</span>
+  <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">→</button>
+</div>
+
+<script>
+  const totalSlides = 11;
+  let current = 1;
+
+  const dotsEl = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+
+  // Build dots
+  for (let i = 1; i <= totalSlides; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 1 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+
+  function goTo(n) {
+    const prev = document.getElementById('slide-' + current);
+    prev.classList.remove('active');
+    prev.classList.add('exit');
+    setTimeout(() => prev.classList.remove('exit'), 600);
+
+    current = n;
+
+    const next = document.getElementById('slide-' + current);
+    next.classList.add('active');
+
+    // Update dots
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i + 1 === current);
+    });
+
+    // Update counter
+    counter.textContent = current + ' / ' + totalSlides;
+
+    // Update progress
+    progress.style.width = ((current / totalSlides) * 100) + '%';
+  }
+
+  function changeSlide(dir) {
+    const n = current + dir;
+    if (n < 1 || n > totalSlides) return;
+    goTo(n);
+  }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
+  });
+
+  // Init progress
+  progress.style.width = ((1 / totalSlides) * 100) + '%';
+</script>
+</body>
+</html>
